@@ -204,9 +204,9 @@ async def handler(websocket):  # to do, multiple games at once
         if event["type"] == "join_game":
             await join_game(event, websocket)
         if event["type"] == "play":
-            play(event, websocket)
+            await play(event, websocket)
         if event["type"] == "playAgain":
-            playAgain(event, websocket)
+            await playAgain(event, websocket)
 
 
 async def main():
