@@ -18,7 +18,7 @@ function App() {
       case "joinGame":
         socket.send(JSON.stringify({
           type: "join_game",
-          gameID: state.gameID,
+          gameID: action.gameID,
         }));
         break;
 
