@@ -29,7 +29,7 @@ function App() {
         }))
         break;
 
-      case "playMove":
+      case "play":
         const { row, col } = action;
         socket.send(JSON.stringify({
           type: "play",
@@ -44,8 +44,21 @@ function App() {
           ...state,
           gameID: action.gameID,
           sessionID: action.sessionID,
+          board: action.board,
+          myWins: action.myWins,
+          theirWins: action.theirWins,
+          won: action.gameOver ?? null,
+          playing: action.gameOver
+            ? false
+            : action.myTurn
+              ? "me"
+              : "them",
         }
-        setRoute("game:wait");
+        if (action.started) {
+          setRoute("game:play");
+        } else {
+          setRoute("game:wait")
+        }
         break;
 
       case "ws:update":
@@ -76,6 +89,7 @@ function App() {
     return state;
   }, () => ({ board: [[null, null, null], [null, null, null], [null, null, null]] }));
   state.dispatch = dispatch;
+  // const dispatch = (a, b) => null;
 
   // websocket stuff
   useEffect(() => {
@@ -89,9 +103,9 @@ function App() {
   }, []);
 
   // const state = {
-  //   gameID: "EXAMPLE-GAME-ID",
-  //   sessionID: "EXAMPLE-SESSION-ID",
-  //   board: [["x", null, "o"], [null, "x", null], [null, null, null]],
+  //   gameID: "157a7202-4a50-11ec-b957-b068e6547197",
+  //   sessionID: "157a7202-4a50-11ec-b957-b068e6547197",
+  //   board: [["x", "x", "x"], ["o", "x", "o"], ["o", null, null]],
   //   myWins: 0,
   //   theirWins: 2,
   //   playing: "them",
@@ -169,7 +183,7 @@ function Board({ board, dispatch }) {
         <tr key={rowIdx}>
           {row.map((char, colIdx) => (
             <td
-              onClick={() => dispatch({ type: "playAgain", row: rowIdx, col: colIdx })}
+              onClick={() => dispatch({ type: "play", row: rowIdx, col: colIdx })}
               style={{ border: "1px solid black" }}
               key={rowIdx + "," + colIdx}>
               <span>{boardStrings.get(char)}</span>
@@ -195,7 +209,7 @@ function PlayerTurn({ playing }) {
 
 function GameOverPage(state) {
   return (<div>
-    <CurrentGameID />
+    <CurrentGameID {...state} />
     <ScoreBoard {...state} />
     <Board {...state} />
     <MatchResult {...state} />
