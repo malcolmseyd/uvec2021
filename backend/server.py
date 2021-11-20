@@ -37,7 +37,8 @@ async def create_game(jsonmessage, websocket):
         "playing": playing
     }
     server[newGameID] = gamesession
-    await load_game(jsonmessage, 1, websocket)
+
+    await load_game(newGameID, 1, websocket)
 
 
 async def join_game(jsonmessage, websocket):
@@ -46,8 +47,7 @@ async def join_game(jsonmessage, websocket):
     await load_game(server[GameID], 2, websocket)
 
 
-async def load_game(jsonmessage, player, websocket):
-    serverGame = jsonmessage["gameID"]
+async def load_game(serverGame, player, websocket):
     returnData = None
     if player == 1:
         returnData = {
