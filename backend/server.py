@@ -148,7 +148,7 @@ async def playAgain(jsonmessage, websocket):
     await update(gameID, False, 2, server["player2"]["socket"])
 
 
-async def checkWin(gameID):
+def checkWin(gameID):
     state = "false"
     board = server[gameID]["board"]
     lineWon = None

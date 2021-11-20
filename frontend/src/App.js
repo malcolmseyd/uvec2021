@@ -47,8 +47,8 @@ function App() {
           board: action.board,
           myWins: action.myWins,
           theirWins: action.theirWins,
-          won: action.gameOver ?? null,
-          playing: action.gameOver
+          won: action.gameover ?? null,
+          playing: action.gameover
             ? false
             : action.myTurn
               ? "me"
@@ -67,8 +67,8 @@ function App() {
           board: action.board,
           myWins: action.myWins,
           theirWins: action.theirWins,
-          won: action.gameOver ?? null,
-          playing: action.gameOver
+          won: action.gameover ?? null,
+          playing: action.gameover
             ? false
             : action.myTurn
               ? "me"
