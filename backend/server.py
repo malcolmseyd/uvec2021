@@ -44,7 +44,7 @@ async def create_game(jsonmessage, websocket):
 async def join_game(jsonmessage, websocket):
     GameID = jsonmessage["gameID"]
     server[GameID]["player2"]["socket"] = websocket
-    await load_game(server[GameID], 2, websocket)
+    await load_game(GameID, 2, websocket)
 
 
 async def load_game(serverGame, player, websocket):
@@ -131,7 +131,7 @@ async def checkWin(gameID):
     board = server[gameID]["board"]
     lineWon = None
 
-    for x in range(0, 2):
+    for x in range(0, 2):  # check rows
         if board[x][0] != None:
             if board[x][0] == board[x][1] and board[x][0] == board[x][2]:
                 lineWon = x
@@ -141,7 +141,7 @@ async def checkWin(gameID):
         elif board[lineWon][0] == server[gameID]["player2"]["char"]:
             return "player2Won"
 
-    for y in range(0, 2):
+    for y in range(0, 2):  # check columns
         if board[0][y] != None:
             if board[0][y] == board[1][y] and board[0][y] == board[2][y]:
                 lineWon = y
@@ -151,21 +151,21 @@ async def checkWin(gameID):
         elif board[0][lineWon] == server[gameID]["player2"]["char"]:
             return "player2Won"
 
-    if board[0][0] != None:
+    if board[0][0] != None:  # check diagional
         if board[0][0] == board[1][1] and board[0][0] == board[2][2]:
             if board[0][0] == server[gameID]["player1"]["char"]:
                 return "player1Won"
             elif board[0][0] == server[gameID]["player2"]["char"]:
                 return "player2Won"
 
-    if board[0][2] != None:
+    if board[0][2] != None:  # check other diagional
         if board[0][2] == board[1][1] and board[0][0] == board[2][0]:
             if board[0][2] == server[gameID]["player1"]["char"]:
                 return "player1Won"
             elif board[0][2] == server[gameID]["player2"]["char"]:
                 return "player2Won"
 
-    for x in range(0, 2):
+    for x in range(0, 2):  # check if board is full
         for y in range(0, 2):
             if board[x][y] == None:
                 return "false"
