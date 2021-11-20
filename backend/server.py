@@ -105,11 +105,11 @@ async def play(jsonmessage, websocket):
         playerNext = 1
 
     if playerNext == 1:
-        await update(gameID, True, 1, server["player1"]["socket"])
-        await update(gameID, False, 2, server["player2"]["socket"])
+        await update(gameID, True, 1, server[gameID]["player1"]["socket"])
+        await update(gameID, False, 2, server[gameID]["player2"]["socket"])
     elif playerNext == 2:
-        await update(gameID, False, 1, server["player1"]["socket"])
-        await update(gameID, True, 2, server["player2"]["socket"])
+        await update(gameID, False, 1, server[gameID]["player1"]["socket"])
+        await update(gameID, True, 2, server[gameID]["player2"]["socket"])
 
 
 async def update(gameID, nextplayer, player, websocket):
