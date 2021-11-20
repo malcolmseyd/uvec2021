@@ -74,7 +74,7 @@ function App() {
     }
 
     return state;
-  }, () => ({board: [[null, null, null], [null, null, null], [null, null, null]]}));
+  }, () => ({ board: [[null, null, null], [null, null, null], [null, null, null]] }));
   state.dispatch = dispatch;
 
   // websocket stuff
@@ -116,16 +116,17 @@ function App() {
   );
 }
 
-function HomePage() {
+function HomePage({ dispatch }) {
+  const [gameID, setGameID] = useState("");
   return (<div>
     <div>
-      <button>Create Game</button>
+      <button onClick={() => dispatch({ type: "createGame" })}>Create Game</button>
     </div>
     <div>
-      <input placeholder="Room Code" />
-      <button>Join Game</button>
+      <input placeholder={"Room Code"} value={gameID} onChange={(e) => setGameID(e.target.value)} />
+      <button onClick={() => dispatch({ type: "joinGame", gameID: gameID })}>Join Game</button>
     </div>
-  </div>);
+  </div >);
 }
 
 function CurrentGameID({ gameID }) {

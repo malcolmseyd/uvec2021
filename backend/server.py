@@ -12,9 +12,9 @@ server = {}
 
 
 async def create_game(jsonmessage, websocket):
-    newGameID = uuid.uuid1()
-    player1ID = uuid.uuid4()
-    player2ID = uuid.uuid4()
+    newGameID = str(uuid.uuid1())
+    player1ID = str(uuid.uuid4())
+    player2ID = str(uuid.uuid4())
     board = [[None, None, None], [None, None, None], [None, None, None]]
     playing = "false"
     player1 = {
@@ -36,42 +36,41 @@ async def create_game(jsonmessage, websocket):
         "board": board,
         "playing": playing
     }
-    server[newGameID] = {gamesession}
-    load_game(jsonmessage, 1, websocket)
+    server[newGameID] = gamesession
+    await load_game(jsonmessage, 1, websocket)
 
 
 async def join_game(jsonmessage, websocket):
     GameID = jsonmessage["gameID"]
     server[GameID]["player2"]["socket"] = websocket
-    load_game(server[GameID], 2, websocket)
+    await load_game(server[GameID], 2, websocket)
 
 
 async def load_game(jsonmessage, player, websocket):
-    async for message in websocket:
-        serverGame = jsonmessage["gameID"]
-        returnData = None
-        if player == 1:
-            returnData = {
-                "gameID": serverGame,
-                "session": server[serverGame]["player1"]["player1ID"],
-                "board": [[None]*3]*3,
-                "myWins": 0,
-                "theirWins": 0,
-                "started": False,
-                "myTurn": False
-            }
-        elif player == 2:
-            returnData = {
-                "gameID": serverGame,
-                "session": server[serverGame]["player2"]["player2ID"],
-                "board": [[None]*3]*3,
-                "myWins": 0,
-                "theirWins": 0,
-                "started": True,
-                "myTurn": False
-            }
+    serverGame = jsonmessage["gameID"]
+    returnData = None
+    if player == 1:
+        returnData = {
+            "gameID": serverGame,
+            "session": server[serverGame]["player1"]["player1ID"],
+            "board": [[None]*3]*3,
+            "myWins": 0,
+            "theirWins": 0,
+            "started": False,
+            "myTurn": False
+        }
+    elif player == 2:
+        returnData = {
+            "gameID": serverGame,
+            "session": server[serverGame]["player2"]["player2ID"],
+            "board": [[None]*3]*3,
+            "myWins": 0,
+            "theirWins": 0,
+            "started": True,
+            "myTurn": False
+        }
 
-        await websocket.send(json.dumps(returnData))
+    await websocket.send(json.dumps(returnData))
 
 
 async def play(jsonmessage, websocket):
@@ -170,9 +169,9 @@ async def handler(websocket):  # to do, multiple games at once
         event = json.loads(message)
         print(message)
         if event["type"] == "create_game":
-            create_game(event, websocket)
+            await create_game(event, websocket)
         if event["type"] == "join_game":
-            join_game(event, websocket)
+            await join_game(event, websocket)
         if event["type"] == "play":
             play(event, websocket)
         if event["type"] == "playAgain":
