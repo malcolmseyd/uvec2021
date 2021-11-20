@@ -43,7 +43,7 @@ function App() {
         state = {
           ...state,
           gameID: action.gameID,
-          sessionID: action.sessionID,
+          sessionID: action.session,
           board: action.board,
           myWins: action.myWins,
           theirWins: action.theirWins,
@@ -172,8 +172,8 @@ function ScoreBoard({ myWins, theirWins }) {
 }
 
 const boardStrings = new Map();
-boardStrings.set("x", "Ｘ");
-boardStrings.set("o", "Ｏ");
+boardStrings.set("X", "Ｘ");
+boardStrings.set("O", "Ｏ");
 boardStrings.set(null, "　");
 
 function Board({ board, dispatch }) {

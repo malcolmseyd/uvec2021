@@ -113,31 +113,30 @@ async def play(jsonmessage, websocket):
 
 
 async def update(gameID, nextplayer, player, websocket):
-    async for message in websocket:
-        if player == 1:
-            returnData = {
-                "type": "update",
-                "myTurn": nextplayer,
-                "board": server[gameID]["board"],
-                "myWins": server[gameID]["player1"]["wins"],
-                "theirWins": server[gameID]["player2"]["wins"]
-            }
-        elif player == 2:
-            returnData = {
-                "type": "update",
-                "myTurn": nextplayer,
-                "board": server[gameID]["board"],
-                "myWins": server[gameID]["player2"]["wins"],
-                "theirWins": server[gameID]["player1"]["wins"]
-            }
-        boardstate = checkWin(gameID)
-        if boardstate != "false":
-            if boardstate == "player1won":
-                server[gameID]["player1"]["wins"] = server[gameID]["player1"]["wins"] + 1
-            elif boardstate == "player2won":
-                server[gameID]["player2"]["wins"] = server[gameID]["player2"]["wins"] + 1
-            returnData["gameover"] = boardstate
-        await websocket.send(json.dumps(returnData))
+    if player == 1:
+        returnData = {
+            "type": "update",
+            "myTurn": nextplayer,
+            "board": server[gameID]["board"],
+            "myWins": server[gameID]["player1"]["wins"],
+            "theirWins": server[gameID]["player2"]["wins"]
+        }
+    elif player == 2:
+        returnData = {
+            "type": "update",
+            "myTurn": nextplayer,
+            "board": server[gameID]["board"],
+            "myWins": server[gameID]["player2"]["wins"],
+            "theirWins": server[gameID]["player1"]["wins"]
+        }
+    boardstate = checkWin(gameID)
+    if boardstate != "false":
+        if boardstate == "player1won":
+            server[gameID]["player1"]["wins"] = server[gameID]["player1"]["wins"] + 1
+        elif boardstate == "player2won":
+            server[gameID]["player2"]["wins"] = server[gameID]["player2"]["wins"] + 1
+        returnData["gameover"] = boardstate
+    await websocket.send(json.dumps(returnData))
 
 
 async def playAgain(jsonmessage, websocket):
