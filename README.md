@@ -6,7 +6,8 @@ This game was developed to run on a Linux server and be accessible via a web bro
 
 Dependencies: 
 Python3 
+npm
 Python websockets (https://websockets.readthedocs.io/en/stable/index.html) This can be installed with $ pip install websockets
 
 The server backend can be run using python3 server. 
-The frontend website site can be run using 
+The frontend website site can be run using npm build 
