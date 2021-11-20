@@ -165,7 +165,11 @@ async def checkWin(gameID):
             elif board[0][2] == server[gameID]["player2"]["char"]:
                 return "player2Won"
 
-    return state
+    for x in range(0, 2):
+        for y in range(0, 2):
+            if board[x][y] == None:
+                return "false"
+    return "tie"
 
 
 async def handler(websocket):  # to do, multiple games at once
