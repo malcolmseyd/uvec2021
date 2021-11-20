@@ -3,6 +3,7 @@
 
 # Need websocket here
 import asyncio
+from typing_extensions import TypeVarTuple
 import websockets
 import json
 import uuid
@@ -14,11 +15,11 @@ async def handler(websocket):  # to do, multiple games at once
         print(message)
         if event["type"] == "create_game":
             create_game(event, websocket)
-            load_game(event, websocket)
+            #load_game(event, websocket)
         if event["type"] == "join_game":
             p2ID = join_game(event, websocket)
         if event["type"] == "play":
-            play(event)
+            play(event, websocket)
         if event["type"] == "update":
             update(event)
         if event["type"] == "playAgain":
@@ -44,12 +45,14 @@ def create_game(jsonmessage, websocket):
     player1 = {
         "player1ID": player1ID,
         "wins": 0,
-        "char": "X"
+        "char": "X",
+        "socket": websocket
     }
     player2 = {
         "player2ID": player2ID,
         "wins": 0,
-        "char": "O"
+        "char": "O",
+        "socket": None
     }
     gamesession = {
         "gameID": newGameID,
@@ -64,6 +67,7 @@ def create_game(jsonmessage, websocket):
 
 def join_game(jsonmessage, websocket):
     GameID = jsonmessage["gameID"]
+    server[GameID]["player2"]["socket"] = websocket
     load_game(server[GameID], 2, websocket)
 
 
@@ -88,30 +92,62 @@ async def load_game(jsonmessage, player, websocket):
                 "board": [[None]*3]*3,
                 "myWins": 0,
                 "theirWins": 0,
-                "started": False,
+                "started": True,
                 "myTurn": False
             }
 
         await websocket.send(json.dumps(returnData))
 
 
-def play(jsonmessage):
+def play(jsonmessage, websocket):
+    gameID = jsonmessage["gameID"]
+    player = jsonmessage["sessionID"]
+    row = jsonmessage["move"]["row"]
+    column = jsonmessage["move"]["column"]
+    playerNext = None
+
+    if server[gameID]["player1"]["player1ID"] == player:
+        if server[gameID]["board"][row][column] == None:
+            server[gameID]["board"][row][column] = server[gameID]["player1"]["char"]
+        playerNext = 2
+    elif server[gameID]["player2"]["player2ID"] == player:
+        server[gameID]["board"][row][column] = server[gameID]["player2"]["char"]
+        playerNext = 1
+
+    if playerNext == 1:
+        update(gameID, True, 1, server["player1"]["socket"])
+        update(gameID, False, 2, server["player2"]["socket"])
+    elif playerNext == 2:
+        update(gameID, False, 1, server["player1"]["socket"])
+        update(gameID, True, 2, server["player2"]["socket"])
+
+
+async def update(gameID, nextplayer, player, websocket):
+    async for message in websocket:
+        if player == 1:
+            returnData = {
+                "myTurn": nextplayer,
+                "board": server[gameID]["board"],
+                "myWins": server[gameID]["player1"]["wins"],
+                "theirWins": server[gameID]["player2"]["wins"]
+            }
+        elif player == 2:
+            returnData = {
+                "myTurn": nextplayer,
+                "board": server[gameID]["board"],
+                "myWins": server[gameID]["player2"]["wins"],
+                "theirWins": server[gameID]["player1"]["wins"]
+            }
+        boardstate = checkWin()
+        if boardstate != "false":
+            returnData["gameover"] = boardstate
+        await websocket.send(json.dumps(returnData))
+
+
+def playAgain(jsonmessage, websocket):
     x = null
 
 
-def update(jsonmessage):
-    x = null
-
-
-def playAgain(jsonmessage):
-    x = null
-
-# need to add each game to server when created
-
-# Can make each game an object or a dictionary
-
-
-# player1
-# player2
-
-# player
+def checkWin(gameID):
+    state = "false"
+    return state
