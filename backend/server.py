@@ -141,7 +141,12 @@ async def update(gameID, nextplayer, player, websocket):
 
 
 async def playAgain(jsonmessage, websocket):
-    x = None
+    gameID = jsonmessage["gameID"]
+    for x in range(0, 2):
+        for y in range(0, 2):
+            server[gameID]["board"][x][y] == None
+    await update(gameID, True, 1, server["player1"]["socket"])
+    await update(gameID, False, 2, server["player2"]["socket"])
 
 
 async def checkWin(gameID):
