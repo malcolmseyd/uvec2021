@@ -51,6 +51,7 @@ async def load_game(serverGame, player, websocket):
     returnData = None
     if player == 1:
         returnData = {
+            "type": "load_game",
             "gameID": serverGame,
             "session": server[serverGame]["player1"]["player1ID"],
             "board": [[None]*3]*3,
@@ -61,6 +62,7 @@ async def load_game(serverGame, player, websocket):
         }
     elif player == 2:
         returnData = {
+            "type": "load_game",
             "gameID": serverGame,
             "session": server[serverGame]["player2"]["player2ID"],
             "board": [[None]*3]*3,
@@ -100,6 +102,7 @@ async def update(gameID, nextplayer, player, websocket):
     async for message in websocket:
         if player == 1:
             returnData = {
+                "type": "update",
                 "myTurn": nextplayer,
                 "board": server[gameID]["board"],
                 "myWins": server[gameID]["player1"]["wins"],
@@ -107,6 +110,7 @@ async def update(gameID, nextplayer, player, websocket):
             }
         elif player == 2:
             returnData = {
+                "type": "update",
                 "myTurn": nextplayer,
                 "board": server[gameID]["board"],
                 "myWins": server[gameID]["player2"]["wins"],
