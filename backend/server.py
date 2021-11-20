@@ -11,7 +11,7 @@ import uuid
 server = {}
 
 
-def create_game(jsonmessage, websocket):
+async def create_game(jsonmessage, websocket):
     newGameID = uuid.uuid1()
     player1ID = uuid.uuid4()
     player2ID = uuid.uuid4()
@@ -40,7 +40,7 @@ def create_game(jsonmessage, websocket):
     load_game(jsonmessage, 1, websocket)
 
 
-def join_game(jsonmessage, websocket):
+async def join_game(jsonmessage, websocket):
     GameID = jsonmessage["gameID"]
     server[GameID]["player2"]["socket"] = websocket
     load_game(server[GameID], 2, websocket)
@@ -74,7 +74,7 @@ async def load_game(jsonmessage, player, websocket):
         await websocket.send(json.dumps(returnData))
 
 
-def play(jsonmessage, websocket):
+async def play(jsonmessage, websocket):
     gameID = jsonmessage["gameID"]
     player = jsonmessage["sessionID"]
     row = jsonmessage["move"]["row"]
@@ -119,11 +119,11 @@ async def update(gameID, nextplayer, player, websocket):
         await websocket.send(json.dumps(returnData))
 
 
-def playAgain(jsonmessage, websocket):
+async def playAgain(jsonmessage, websocket):
     x = None
 
 
-def checkWin(gameID):
+async def checkWin(gameID):
     state = "false"
     board = server[gameID]["board"]
     lineWon = None
@@ -147,6 +147,20 @@ def checkWin(gameID):
             return "player1Won"
         elif board[0][lineWon] == server[gameID]["player2"]["char"]:
             return "player2Won"
+
+    if board[0][0] != None:
+        if board[0][0] == board[1][1] and board[0][0] == board[2][2]:
+            if board[0][0] == server[gameID]["player1"]["char"]:
+                return "player1Won"
+            elif board[0][0] == server[gameID]["player2"]["char"]:
+                return "player2Won"
+
+    if board[0][2] != None:
+        if board[0][2] == board[1][1] and board[0][0] == board[2][0]:
+            if board[0][2] == server[gameID]["player1"]["char"]:
+                return "player1Won"
+            elif board[0][2] == server[gameID]["player2"]["char"]:
+                return "player2Won"
 
     return state
 
