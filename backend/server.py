@@ -130,7 +130,7 @@ async def update(gameID, nextplayer, player, websocket):
                 "myWins": server[gameID]["player2"]["wins"],
                 "theirWins": server[gameID]["player1"]["wins"]
             }
-        boardstate = checkWin(gameID)
+        boardstate = await checkWin(gameID)
         if boardstate != "false":
             if boardstate == "player1won":
                 server[gameID]["player1"]["wins"] = server[gameID]["player1"]["wins"] + 1
@@ -149,7 +149,7 @@ async def playAgain(jsonmessage, websocket):
     await update(gameID, False, 2, server["player2"]["socket"])
 
 
-def checkWin(gameID):
+async def checkWin(gameID):
     state = "false"
     board = server[gameID]["board"]
     lineWon = None
