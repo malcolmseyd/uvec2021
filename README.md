@@ -1,6 +1,6 @@
 # uvec2021
 
-# Installion
+# Installation
 
 This game was developed to run on a Linux server and be accessible via a web browser. To set up a server please follow the following instructions. 
 
