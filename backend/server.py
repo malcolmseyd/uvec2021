@@ -3,35 +3,10 @@
 
 # Need websocket here
 import asyncio
-from typing_extensions import TypeVarTuple
 import websockets
 import json
 import uuid
 
-
-async def handler(websocket):  # to do, multiple games at once
-    async for message in websocket:
-        event = json.loads(message)
-        print(message)
-        if event["type"] == "create_game":
-            create_game(event, websocket)
-            #load_game(event, websocket)
-        if event["type"] == "join_game":
-            p2ID = join_game(event, websocket)
-        if event["type"] == "play":
-            play(event, websocket)
-        if event["type"] == "update":
-            update(event)
-        if event["type"] == "playAgain":
-            playAgain(event)
-
-
-async def main():
-    async with websockets.serve(handler, "", 8001):
-        await asyncio.Future()
-
-if __name__ == "__main__":
-    asyncio.run(main())
 
 server = {}
 
@@ -145,9 +120,54 @@ async def update(gameID, nextplayer, player, websocket):
 
 
 def playAgain(jsonmessage, websocket):
-    x = null
+    x = None
 
 
 def checkWin(gameID):
     state = "false"
+    board = server[gameID]["board"]
+    lineWon = None
+
+    for x in range(0, 2):
+        if board[x][0] != None:
+            if board[x][0] == board[x][1] and board[x][0] == board[x][2]:
+                lineWon = x
+    if lineWon != None:
+        if board[lineWon][0] == server[gameID]["player1"]["char"]:
+            return "player1Won"
+        elif board[lineWon][0] == server[gameID]["player2"]["char"]:
+            return "player2Won"
+
+    for y in range(0, 2):
+        if board[0][y] != None:
+            if board[0][y] == board[1][y] and board[0][y] == board[2][y]:
+                lineWon = y
+    if lineWon != None:
+        if board[0][lineWon] == server[gameID]["player1"]["char"]:
+            return "player1Won"
+        elif board[0][lineWon] == server[gameID]["player2"]["char"]:
+            return "player2Won"
+
     return state
+
+
+async def handler(websocket):  # to do, multiple games at once
+    async for message in websocket:
+        event = json.loads(message)
+        print(message)
+        if event["type"] == "create_game":
+            create_game(event, websocket)
+        if event["type"] == "join_game":
+            join_game(event, websocket)
+        if event["type"] == "play":
+            play(event, websocket)
+        if event["type"] == "playAgain":
+            playAgain(event, websocket)
+
+
+async def main():
+    async with websockets.serve(handler, "", 8001):
+        await asyncio.Future()
+
+if __name__ == "__main__":
+    asyncio.run(main())
